@@ -125,12 +125,14 @@ app.put("/customers/:id", (req, res) => {
 
   const customerIndex = customers.findIndex((cust) => cust.id === id);
 
+  // respond with 404 (Not Found) if customer ID inputted isn't found
   if (customerIndex === -1) {
     return res.status(404).send({
       error: `Customer with ID ${id} not found.`,
     });
   }
 
+  // respond with 400 (Bad Request) if at least one of the required fields is missing
   if (!name && !email && !phone) {
     return res.status(400).send({
       error:
@@ -141,6 +143,7 @@ app.put("/customers/:id", (req, res) => {
   const updatedCustomer = { ...customers[customerIndex], name, email, phone };
   customers[customerIndex] = updatedCustomer;
 
+  // respond with 200 (OK) if customer ID updated successfully
   res.status(200).send({
     message: `Customer with ID ${id} updated successfully.`,
     customer: updatedCustomer,
