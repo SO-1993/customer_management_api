@@ -1,7 +1,6 @@
 // CRUD Endpoints:
 // Implement the following API endpoints:
 
-//     GET /customers/:id: Retrieve a specific customer by ID.
 //     PUT /customers/:id: Update an existing customer's details.
 //     DELETE /customers/:id: Remove a customer by ID.
 
@@ -102,5 +101,23 @@ app.get("/customers", (req, res) => {
   res.status(200).send({
     message: "List of all customers.",
     customers,
+  });
+});
+
+// GET /customers/:id: Retrieve a specific customer by ID.
+app.get("/customers/:id", (req, res) => {
+  const { id } = req.params;
+
+  const customer = customers.find((cust) => cust.id === id); // Find the first customer whose ID matches provided ID
+
+  if (!customer) {
+    return res.status(404).send({
+      error: `Customer with ID ${id} not found.`,
+    });
+  }
+
+  res.status(200).send({
+    message: `Customer with ID ${id} retrieved successfully.`,
+    customer,
   });
 });
