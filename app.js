@@ -14,7 +14,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 4444;
 
-// array of customers in lieu of a databsse to connec to
+// array of customers in lieu of a databsse to connect to
 let customers = [
   {
     id: "1",
@@ -73,16 +73,28 @@ app.get("/status", (req, res) => {
 app.post("/customers", (req, res) => {
   const { id, name, email, phone } = req.body;
 
+  // respond with 400 (Bad Request) if at least one of the required fields is missing
   if (!id || !name || !email || !phone) {
     return res.status(400).send({
       error:
-        "Missing required fields. Please provide id, name, email and phone",
+        "Missing required fields. Please provide id, name, email, and phone",
     });
   }
-  const newCustomer = { id, name, email, phone };
 
+  // respond with 400 (Bad Request) if customer ID already exists
+  const existingCustomer = customers.find((cust) => cust.id === id);
+  if (existingCustomer) {
+    return res.status(400).send({
+      error: `Customer with ID ${id} already exists.`,
+    });
+  }
+
+  const customerToAdd = { id, name, email, phone };
+  customers.push(customerToAdd);
+
+  // respond with 201 (Created) if customer created successfully
   res.status(201).send({
-    message: "Customer created successfully",
-    customer: newCustomer,
+    message: "Customer created successfully.",
+    customer: customerToAdd,
   });
 });
