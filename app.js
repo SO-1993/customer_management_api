@@ -1,9 +1,3 @@
-// CRUD Endpoints:
-// Implement the following API endpoints:
-
-//     PUT /customers/:id: Update an existing customer's details.
-//     DELETE /customers/:id: Remove a customer by ID.
-
 const express = require("express");
 
 const app = express();
@@ -110,14 +104,47 @@ app.get("/customers/:id", (req, res) => {
 
   const customer = customers.find((cust) => cust.id === id); // Find the first customer whose ID matches provided ID
 
+  // respond with 404 (Not Found) if customer ID inputted isn't found
   if (!customer) {
     return res.status(404).send({
       error: `Customer with ID ${id} not found.`,
     });
   }
 
+  // respond with 200 (OK) if customer retrieved successfully
   res.status(200).send({
     message: `Customer with ID ${id} retrieved successfully.`,
     customer,
   });
 });
+
+// PUT /customers/:id: Update an existing customer's details.
+app.put("/customers/:id", (req, res) => {
+  const { id } = req.params;
+  const { name, email, phone } = req.body;
+
+  const customerIndex = customers.findIndex((cust) => cust.id === id);
+
+  if (customerIndex === -1) {
+    return res.status(404).send({
+      error: `Customer with ID ${id} not found.`,
+    });
+  }
+
+  if (!name && !email && !phone) {
+    return res.status(400).send({
+      error:
+        "Please provide at least one field to update: name, email, or phone.",
+    });
+  }
+
+  const updatedCustomer = { ...customers[customerIndex], name, email, phone };
+  customers[customerIndex] = updatedCustomer;
+
+  res.status(200).send({
+    message: `Customer with ID ${id} updated successfully.`,
+    customer: updatedCustomer,
+  });
+});
+
+// DELETE /customers/:id: Remove a customer by ID.
