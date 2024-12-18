@@ -151,3 +151,23 @@ app.put("/customers/:id", (req, res) => {
 });
 
 // DELETE /customers/:id: Remove a customer by ID.
+app.delete("/customers/:id", (req, res) => {
+  const { id } = req.params;
+
+  const customerIndex = customers.findIndex((cust) => cust.id === id);
+
+  // respond with 404 (Not Found) if customer ID inputted isn't found
+  if (customerIndex === -1) {
+    return res.status(404).send({
+      error: `Customer with ID ${id} not found.`,
+    });
+  }
+
+  const deletedCustomer = customers.splice(customerIndex, 1);
+
+  // respond with 200 (OK) if customer deleted successfully
+  res.status(200).send({
+    message: `Customer with ID ${id} deleted successfully.`,
+    customer: deletedCustomer[0],
+  });
+});
